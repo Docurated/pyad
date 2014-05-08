@@ -21,7 +21,13 @@ class ADQuery(ADBase):
     # Limits the search to the base object.
     # The result contains, at most, one object.
     ADS_SCOPE_BASE = 0
-    
+
+    # ADS_CHASE_REFERRALS_ENUM enumeration. http://msdn.microsoft.com/en-us/library/aa772250(v=vs.85).aspx
+    ADS_CHASE_REFERRALS_NEVER        = 0x00
+    ADS_CHASE_REFERRALS_SUBORDINATE  = 0x20
+    ADS_CHASE_REFERRALS_EXTERNAL     = 0x40,
+    ADS_CHASE_REFERRALS_ALWAYS       = 0x20 | 0x40
+
     # the methodology for performing a command with credentials
     # and for forcing encryption can be found at http://goo.gl/GGCK5
     
@@ -43,7 +49,7 @@ class ADQuery(ADBase):
         self.__queried = False
 
     def execute_query(self, attributes=["distinguishedName"], where_clause=None,
-                    type="LDAP", base_dn=None, page_size=1000, options={}):
+                    type="LDAP", base_dn=None, page_size=1000, extra_command_properties={}):
         assert type in ("LDAP", "GC")
         if not base_dn:
             if type == "LDAP": 
@@ -60,6 +66,9 @@ class ADQuery(ADBase):
         command.ActiveConnection = self.__adodb_conn
         command.Properties("Page Size").value = page_size
         command.Properties("Searchscope").value = ADQuery.ADS_SCOPE_SUBTREE
+
+        for prop, value in extra_command_properties.iteritems():
+            command.Properties(prop).value = value
         
         command.CommandText = query
         self.__rs, self.__rc = command.Execute()
