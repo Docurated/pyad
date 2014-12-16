@@ -137,7 +137,13 @@ class ADObject(ADBase):
         return cls(distinguished_name=None, adsi_ldap_com_object=com_object)
 
     def __get_prefixed_cn(self):
-        prefix = 'ou' if self.type == 'organizationalUnit' else 'cn'
+        prefix = None
+        if self.type == 'organizationalUnit': 
+            prefix = 'ou'
+        elif self.type == "domain":
+            prefix = 'dc'
+        else:
+            prefix = 'cn'
         return '='.join((prefix, self.get_attribute(prefix, False)))
 
     def __get_object_sid(self):
@@ -390,6 +396,10 @@ class ADObject(ADBase):
         # http://www.microsoft.com/technet/scriptcenter/topics/win2003/lastlogon.mspx
         # kudos to http://docs.activestate.com/activepython/2.6/pywin32/html/com/help/active_directory.html
         return pyadutils.convert_datetime(self.get_attribute('pwdLastSet', False))
+        
+    def get_last_login(self):
+        """Returns datetime object of when user last login on the connected domain controller."""
+        return pyadutils.convert_datetime(self.get_attribute('lastLogonTimestamp', False))
 
     def get_uSNChanged(self):
         """Returns uSNChanged as a single integer from the current domain controller"""
@@ -508,8 +518,6 @@ class ADObject(ADBase):
     def adjust_pyad_type(self):
         if self.type in self._py_ad_object_mappings.keys():
             self.__class__ = self._py_ad_object_mappings[self.type]
-        else:
-            raise Exception("Unkown type. Adjustment not possible.")
 
     def __get_parent_container(self):
         q = ADObject.from_dn(self.parent_container_path,
