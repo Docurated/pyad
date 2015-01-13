@@ -45,6 +45,7 @@ class ADQuery(ADBase):
         self.reset()
     
     def reset(self):
+        self.query = None
         self.__rs = self.__rc = None
         self.__queried = False
 
@@ -56,11 +57,11 @@ class ADQuery(ADBase):
                 base_dn = self.default_domain
             if type == "GC": 
                 base_dn = default_forest
-        query = "SELECT %s FROM '%s'" % (','.join(attributes),
+        self.query = "SELECT %s FROM '%s'" % (','.join(attributes),
                 pyadutils.generate_ads_path(base_dn, type,
                         self.default_ldap_server, self.default_ldap_port))
         if where_clause:
-            query = ' '.join((query, 'WHERE', where_clause))
+            self.query = ' '.join((self.query, 'WHERE', where_clause))
         
         command = win32com.client.Dispatch("ADODB.Command")
         command.ActiveConnection = self.__adodb_conn
@@ -70,7 +71,7 @@ class ADQuery(ADBase):
         for prop, value in extra_command_properties.iteritems():
             command.Properties(prop).value = value
         
-        command.CommandText = query
+        command.CommandText = self.query
         self.__rs, self.__rc = command.Execute()
         self.__queried = True
 
