@@ -35,12 +35,12 @@ class ADQuery(ADBase):
         self.__adodb_conn = win32com.client.Dispatch("ADODB.Connection")
         self.__adodb_conn.Open("Provider=ADSDSOObject")
         if self.default_username and self.default_password:
-            self.__adodb_conn.Properties("Encrypt Password").value = True
-            self.__adodb_conn.Properties("User ID").value = self.default_username
-            self.__adodb_conn.Properties("Password").value = self.default_password
+            self.__adodb_conn.Properties("Encrypt Password").Value = True
+            self.__adodb_conn.Properties("User ID").Value = self.default_username
+            self.__adodb_conn.Properties("Password").Value = self.default_password
             adsi_flag = ADQuery.ADS_SECURE_AUTHENTICATION | \
                             ADQuery.ADS_USE_ENCRYPTION
-            self.__adodb_conn.Properties("ADSI Flag").value = adsi_flag
+            self.__adodb_conn.Properties("ADSI Flag").Value = adsi_flag
             
         self.reset()
     
@@ -54,9 +54,9 @@ class ADQuery(ADBase):
         assert type in ("LDAP", "GC")
         if not base_dn:
             if type == "LDAP": 
-                base_dn = self.default_domain
+                base_dn = self._safe_default_domain
             if type == "GC": 
-                base_dn = default_forest
+                base_dn = self._safe_default_forest
         self.query = "SELECT %s FROM '%s'" % (','.join(attributes),
                 pyadutils.generate_ads_path(base_dn, type,
                         self.default_ldap_server, self.default_ldap_port))
