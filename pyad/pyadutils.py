@@ -129,7 +129,7 @@ def generate_ads_path(distinguished_name, type_, server=None, port=None):
     if server:
         ads_path = ''.join((ads_path,server))
         if port:
-            ads_path = ':'.join((ads_path,str(port)))
-        ads_path = ''.join((ads_path,'/'))
-    ads_path = ''.join((ads_path,escape_path(distinguished_name)))
+            ads_path = ':'.join((ads_path, str(port)))
+        ads_path = ''.join((ads_path, '/'))
+    ads_path = ''.join((ads_path, distinguished_name))
     return ads_path
