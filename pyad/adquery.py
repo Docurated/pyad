@@ -75,6 +75,43 @@ class ADQuery(ADBase):
         self.__rs, self.__rc = command.Execute()
         self.__queried = True
 
+    def execute_query_range(self, attributes=["distinguishedName"], where_clause=None, base_dn=None, search_scope="subtree"):
+        assert type in ("LDAP", "GC")
+        if not base_dn:
+            base_dn = self._safe_default_domain
+
+        command = win32com.client.Dispatch("ADODB.Command")
+        command.ActiveConnection = self.__adodb_conn
+        command.Properties("Page Size").Value = page_size
+
+        range_step = 1000
+        range_low = 0
+        range_high = range_low + range_step - 1
+        last_query = False
+        end_loop = False
+        while not end_loop:
+            if last_query:
+                command_text = "<LDAP://{0}>;{1};{2};range={3}-*;{5}" % base_dn, where_clause, attributes, range_low, search_scope
+                end_loop = True
+            else:
+                command_text = "<LDAP://{0}>;{1};{2};range={3}-{4};{5}" % base_dn, where_clause, attributes, range_low, range_high, search_scope
+
+            command.CommandText = command_text
+            rs, rc = command.Execute()
+
+            if not rs.EOF and rs.Fields[0] is None:
+                last_query = True
+            else:
+                while not rs.EOF
+                    d = {}
+                    for f in rs.Fields:
+                        d[f.Name] = f.Value
+                    yield d
+                    rs.MoveNext()
+
+            range_low = range_high + 1
+            range_high = range_low + range_step - 1
+
     def get_row_count(self):
         return self.__rs.RecordCount
 
