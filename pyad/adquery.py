@@ -82,7 +82,6 @@ class ADQuery(ADBase):
 
         command = win32com.client.Dispatch("ADODB.Command")
         command.ActiveConnection = self.__adodb_conn
-        command.Properties("Page Size").Value = page_size
 
         range_step = 1000
         range_low = 0
