@@ -79,6 +79,7 @@ class ADQuery(ADBase):
         if not base_dn:
             base_dn = self._safe_default_domain
 
+        target_dn = pyadutils.generate_ads_path(base_dn, "LDAP", self.default_ldap_server, self.default_ldap_port))
         command = win32com.client.Dispatch("ADODB.Command")
         command.ActiveConnection = self.__adodb_conn
 
@@ -89,10 +90,10 @@ class ADQuery(ADBase):
         end_loop = False
         while not end_loop:
             if last_query:
-                command_text = "<LDAP://{0}>;{1};{2};range={3}-*;{4}".format(base_dn, where_clause, attributes, range_low - range_step, search_scope)
+                command_text = "<LDAP://{0}>;{1};{2};range={3}-*;{4}".format(target_dn, where_clause, attributes, range_low - range_step, search_scope)
                 end_loop = True
             else:
-                command_text = "<LDAP://{0}>;{1};{2};range={3}-{4};{5}".format(base_dn, where_clause, attributes, range_low, range_high, search_scope)
+                command_text = "<LDAP://{0}>;{1};{2};range={3}-{4};{5}".format(target_dn, where_clause, attributes, range_low, range_high, search_scope)
 
             command.CommandText = command_text
             rs, rc = command.Execute()
