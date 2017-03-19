@@ -79,7 +79,7 @@ class ADQuery(ADBase):
         if not base_dn:
             base_dn = self._safe_default_domain
 
-        target_dn = pyadutils.generate_ads_path(base_dn, "LDAP", self.default_ldap_server, self.default_ldap_port))
+        target_dn = pyadutils.generate_ads_path(base_dn, "LDAP", self.default_ldap_server, self.default_ldap_port)
         command = win32com.client.Dispatch("ADODB.Command")
         command.ActiveConnection = self.__adodb_conn
 
