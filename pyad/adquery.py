@@ -75,7 +75,7 @@ class ADQuery(ADBase):
         self.__rs, self.__rc = command.Execute()
         self.__queried = True
 
-    def execute_query_range(self, attributes="member", where_clause=None, base_dn=None, search_scope="subtree"):
+    def execute_query_range(self, attributes="member", where_clause=None, base_dn=None, search_scope="subtree", range_step=1000):
         if not base_dn:
             base_dn = self._safe_default_domain
 
@@ -83,7 +83,6 @@ class ADQuery(ADBase):
         command = win32com.client.Dispatch("ADODB.Command")
         command.ActiveConnection = self.__adodb_conn
 
-        range_step = 1000
         range_low = 0
         range_high = range_low + range_step - 1
         last_query = False
@@ -104,7 +103,8 @@ class ADQuery(ADBase):
                 while not rs.EOF:
                     d = {}
                     for f in rs.Fields:
-                        d[f.Name] = f.Value
+                        for value in f.Value:
+                            yield value
                     yield d
                     rs.MoveNext()
 
