@@ -101,11 +101,9 @@ class ADQuery(ADBase):
                 last_query = True
             else:
                 while not rs.EOF:
-                    d = {}
                     for f in rs.Fields:
                         for value in f.Value:
                             yield value
-                    yield d
                     rs.MoveNext()
 
             range_low = range_high + 1
