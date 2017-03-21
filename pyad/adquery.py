@@ -89,10 +89,10 @@ class ADQuery(ADBase):
         end_loop = False
         while not end_loop:
             if last_query:
-                command_text = "<{0}>;{1};{2};range={3}-*;{4}".format(target_dn, where_clause, attributes, range_low - range_step, search_scope)
+                command_text = u"<{0}>;{1};{2};range={3}-*;{4}".format(target_dn, where_clause, attributes, range_low - range_step, search_scope)
                 end_loop = True
             else:
-                command_text = "<{0}>;{1};{2};range={3}-{4};{5}".format(target_dn, where_clause, attributes, range_low, range_high, search_scope)
+                command_text = u"<{0}>;{1};{2};range={3}-{4};{5}".format(target_dn, where_clause, attributes, range_low, range_high, search_scope)
 
             command.CommandText = command_text
             rs, rc = command.Execute()
